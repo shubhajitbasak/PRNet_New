@@ -11,7 +11,19 @@ Download the BFM.mat and BFM_UV.mat and put in /utils/ folder -
 
 Prepare Data - 
 
-Make sure to install mesh_core_cython in the local python environment 
+Make sure to install mesh_core_cython in the local python environment by running - 
+
+```shell
+# directory - face3d/mesh/cython
+pip install cython 
+python setup.py build_ext -I 
+python setup.py install
+```
+
+* Point the BFM.mat and BFM_UV.mat in generate_posmap_300WLP.py
+* Update the input_path and output_path in generate_posmap_300WLP.py
+
+ 
 
 
 Related Repo - 
