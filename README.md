@@ -9,9 +9,10 @@ https://github.com/heathentw/prnet-tf2
 Download the BFM.mat and BFM_UV.mat and put in /utils/ folder -
 [BFM](https://drive.google.com/file/d/1eQzpKKJJnc2MSBo7X-OTgyxibinQnMjL/view?usp=sharing)
 
-Make sude to install mesh_core_cython in the local python environment 
+Prepare Data - 
 
-Results are not up to the mark, still work in progress!! :(
+Make sure to install mesh_core_cython in the local python environment 
+
 
 Related Repo - 
 
