@@ -28,6 +28,8 @@ python setup.py install
 
 Related Repo - 
 
+Original repo - https://github.com/YadiraF/PRNet 
+
 TF - 
 
 https://github.com/jnulzl/PRNet-Train
