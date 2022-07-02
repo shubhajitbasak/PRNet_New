@@ -3,7 +3,7 @@ import random
 import skimage
 import numpy as np
 from glob import glob
-from cv2 import cv2
+import cv2
 from torch.utils.data import DataLoader
 from torch.utils.data import Dataset
 from skimage import transform as tf

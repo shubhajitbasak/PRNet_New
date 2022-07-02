@@ -25,4 +25,4 @@ adam_beta2_G: 0.99
 log_steps: 10
 save_steps: 100
 
-uv_weight_mask: './Data/uv-data/uv_weight_mask.png'
+uv_weight_mask: './data/uv-data/uv_weight_mask.png'

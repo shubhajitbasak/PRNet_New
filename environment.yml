@@ -1,4 +1,4 @@
-name: prnet
+name: myTest
 channels:
   - pytorch
   - anaconda
