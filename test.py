@@ -67,3 +67,8 @@ def test(self, error_func_list=None, is_visualize=False):
         fout = open('errororder.txt', 'w', encoding='utf-8')
         fout.write(sep.join(se_path_list))
         fout.close()
+
+
+if __name__ == '__main__':
+    t = np.load('data/uv-data/canonical_vertices.npy')
+    print(t.shape)

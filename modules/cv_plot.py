@@ -6,7 +6,9 @@
 import numpy as np
 import cv2
 
-end_list = np.array([17, 22, 27, 42, 48, 31, 36, 68], dtype = np.int32) - 1
+end_list = np.array([17, 22, 27, 42, 48, 31, 36, 68], dtype=np.int32) - 1
+
+
 def plot_kpt(image, kpt):
     ''' Draw 68 key points
     Args: 
@@ -17,7 +19,7 @@ def plot_kpt(image, kpt):
     kpt = np.round(kpt).astype(np.int32)
     for i in range(kpt.shape[0]):
         st = kpt[i, :2]
-        image = cv2.circle(image,(st[0], st[1]), 1, (0,0,255), 3)  
+        image = cv2.circle(image, (st[0], st[1]), 1, (0, 0, 255), 3)
         if i in end_list:
             continue
         ed = kpt[i + 1, :2]
@@ -28,9 +30,9 @@ def plot_kpt(image, kpt):
 def plot_vertices(image, vertices):
     image = image.copy()
     vertices = np.round(vertices).astype(np.int32)
-    for i in range(0, vertices.shape[0], 2):
+    for i in range(0, vertices.shape[0], 40):  # sbasak01  2
         st = vertices[i, :2]
-        image = cv2.circle(image,(st[0], st[1]), 1, (255,0,0), -1)  
+        image = cv2.circle(image, (st[0], st[1]), 1, (255, 0, 0), -1)
     return image
 
 
@@ -62,9 +64,9 @@ def plot_pose_box(image, P, kpt, color=(0, 255, 0), line_width=2):
     point_3d = np.array(point_3d, dtype=np.float).reshape(-1, 3)
 
     # Map to 2d image points
-    point_3d_homo = np.hstack((point_3d, np.ones([point_3d.shape[0],1]))) #n x 4
-    point_2d = point_3d_homo.dot(P.T)[:,:2]
-    point_2d[:,:2] = point_2d[:,:2] - np.mean(point_2d[:4,:2], 0) + np.mean(kpt[:27,:2], 0)
+    point_3d_homo = np.hstack((point_3d, np.ones([point_3d.shape[0], 1])))  # n x 4
+    point_2d = point_3d_homo.dot(P.T)[:, :2]
+    point_2d[:, :2] = point_2d[:, :2] - np.mean(point_2d[:4, :2], 0) + np.mean(kpt[:27, :2], 0)
     point_2d = np.int32(point_2d.reshape(-1, 2))
 
     # Draw all the lines

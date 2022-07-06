@@ -13,7 +13,7 @@ import numpy as np
 from math import sqrt
 from utils.io import _load
 
-d = 'Data/test-data'
+d = 'data/test-data'
 
 # [1312, 383, 305], current version
 yaws_list = _load(osp.join(d, 'AFLW2000-3D.pose.npy'))
