@@ -14,7 +14,7 @@ from modules.utils import load_yaml, set_memory_growth
 from modules.cv_plot import plot_kpt, plot_vertices, plot_pose_box
 from modules.estimate_pose import estimate_pose
 
-flags.DEFINE_boolean('use_cam', False, 'demo with webcam')
+flags.DEFINE_boolean('use_cam', True, 'demo with webcam')
 flags.DEFINE_string('cfg_path', './configs/prnet.yaml', 'config file path')
 flags.DEFINE_string('gpu', '0', 'which gpu to use')
 flags.DEFINE_string('img_path', './data/test-img', 'path to input image')
@@ -51,26 +51,38 @@ def main(_):
                 np.int32)  # get valid vertices in the pos map
             triangles = np.loadtxt('data/uv-data/triangles.txt').astype(np.int32)
 
+            filtered_indexs = np.loadtxt('data/save-img/blender/vertices_dense_test_final.txt').astype(int)
+
             kpt1 = pos[uv_kpt_ind[1, :], uv_kpt_ind[0, :], :]
 
             # utils.util.write_obj_with_colors(os.path.join(FLAGS.save_path,
             #                                               os.path.basename(img_path).replace('jpg', 'obj')),
             #                                  vertices, triangles, colors=None)
-            kpt = model.get_landmarks(pos)
+            # kpt = model.get_landmarks(pos)
 
-            k_ind = []
-            for k in kpt:
-                k_ind.append(np.where((vertices == k).all(axis=1)))
-
-            k_ind = np.asarray(k_ind).flatten()
+            # k_ind = []
+            # for k in kpt:
+            #     k_ind.append(np.where((vertices == k).all(axis=1)))
+            #
+            # k_ind = np.asarray(k_ind).flatten()
 
             camera_matrix, _ = estimate_pose(vertices)
 
+            vertices = vertices[filtered_indexs]
+
             plt_vert = plot_vertices(img, vertices)
+
+            result_list = [img,
+                           plot_vertices(img, vertices)]
+
             cv2.imshow('vert', plt_vert)
             key = cv2.waitKey(0)
             if key == ord('q'):
                 exit()
+            elif key == ord('s'):
+                cv2.imwrite(os.path.join(FLAGS.save_path, os.path.basename(img_path)),
+                            np.concatenate(result_list, axis=1))
+                print("Result saved in {}".format(FLAGS.save_path))
 
 
             # result_list = [img,
@@ -103,6 +115,7 @@ def main(_):
         cap = cv2.VideoCapture(0)
         start_time = time.time()
         count = 1
+        filtered_indexs = np.loadtxt('data/save-img/blender/vertices_dense_test_final.txt').astype(int)
         while (True):
             _, image = cap.read()
 
@@ -128,9 +141,10 @@ def main(_):
                 vertices = model.get_vertices(pos)
                 kpt = model.get_landmarks(pos)
                 camera_matrix, _ = estimate_pose(vertices)
+                vertices_filtered = vertices[filtered_indexs]
 
                 result_list = [plot_kpt(image, kpt),
-                               plot_vertices(image, vertices),
+                               plot_vertices(image, vertices_filtered),
                                plot_pose_box(image, camera_matrix, kpt)]
 
                 cv2.imshow('Sparse alignment', result_list[0])

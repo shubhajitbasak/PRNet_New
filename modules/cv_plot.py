@@ -27,10 +27,10 @@ def plot_kpt(image, kpt):
     return image
 
 
-def plot_vertices(image, vertices):
+def plot_vertices(image, vertices, filter=1):
     image = image.copy()
     vertices = np.round(vertices).astype(np.int32)
-    for i in range(0, vertices.shape[0], 40):  # sbasak01  2
+    for i in range(0, vertices.shape[0], filter):  # sbasak01  2
         st = vertices[i, :2]
         image = cv2.circle(image, (st[0], st[1]), 1, (255, 0, 0), -1)
     return image
