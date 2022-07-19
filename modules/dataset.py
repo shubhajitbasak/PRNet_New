@@ -9,7 +9,6 @@ from torch.utils.data import Dataset
 from skimage import transform as tf
 
 
-
 def load_dataset(cfg, shuffle=False, num_workers=0):
 	print("[Data] Load datasets: {}".format(cfg['train_dataset']['name']))
 	dataset = PRNet_dataset(cfg['train_dataset']['path'], is_aug=True)
@@ -18,7 +17,7 @@ def load_dataset(cfg, shuffle=False, num_workers=0):
 		num_workers=num_workers)
 	print("[*] Load Success, dataset size: %d" %len(dataset))
 	return data_loader
-	# return len(data_loader.dataset), loader(num_epoch, data_loader)
+# return len(data_loader.dataset), loader(num_epoch, data_loader)
 
 
 def take(num_step, data_loader):

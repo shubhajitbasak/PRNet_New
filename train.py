@@ -11,7 +11,6 @@ from modules.losses import WeightedMSE
 from modules.utils import load_yaml, ProgressBar, set_memory_growth
 from modules.dataset import load_dataset, take
 
-
 flags.DEFINE_string('cfg_path', './configs/prnet.yaml', 'config file path')
 flags.DEFINE_string('gpu', '0', 'which gpu to use')
 
@@ -34,7 +33,7 @@ def main(_):
     generator.summary(line_length=80)
 
     # load dataset
-    train_dataset = load_dataset(cfg, 
+    train_dataset = load_dataset(cfg,
                                  shuffle=True, num_workers=cfg['num_workers'])
 
     # define optimizer
@@ -92,11 +91,10 @@ def main(_):
     # training loop
     summary_writer = tf.summary.create_file_writer(
         './logs/' + cfg['sub_name'])
-    niter = int(cfg['train_dataset']['num_samples'] * cfg['epoch'] / 
-        cfg['batch_size'])
+    niter = int(cfg['train_dataset']['num_samples'] * cfg['epoch'] /
+                cfg['batch_size'])
     prog_bar = ProgressBar(niter, checkpoint.step.numpy())
     remain_steps = max(niter - checkpoint.step.numpy(), 0)
-
 
     for sample in take(remain_steps, train_dataset):
         checkpoint.step.assign_add(1)
@@ -116,7 +114,7 @@ def main(_):
                     tf.summary.scalar('loss_G/{}'.format(k), l, step=steps)
 
                 tf.summary.scalar(
-                    'learning_rate_G', optimizer_G.lr(steps), step=steps) 
+                    'learning_rate_G', optimizer_G.lr(steps), step=steps)
 
         if steps % cfg['save_steps'] == 0:
             manager.save()

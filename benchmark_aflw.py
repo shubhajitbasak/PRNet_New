@@ -1,13 +1,5 @@
 #!/usr/bin/env python3
 # coding: utf-8
-# https://github.com/cleardusk/3DDFA
-
-"""
-Notation (2019.09.15): two versions of spliting AFLW2000-3D:
- 1) AFLW2000-3D.pose.npy: according to the fitted pose
- 2) AFLW2000-3D-new.pose: according to AFLW labels
-There is no obvious difference between these two splits.
-"""
 
 import os.path as osp
 import numpy as np
@@ -15,30 +7,19 @@ from math import sqrt
 from utils.utils_io import _load
 
 d = 'data/test-data'
-
-# [1312, 383, 305], current version
-yaws_list = _load(osp.join(d, 'AFLW2000-3D.pose.npy'))
-
-# [1306, 462, 232], same as paper
-# yaws_list = _load(osp.join(d, 'AFLW2000-3D-new.pose.npy'))
-
-# origin
-pts68_all_ori = _load(osp.join(d, 'AFLW2000-3D.pts68.npy'))
-
-# reannonated
-pts68_all_re = _load(osp.join(d, 'AFLW2000-3D-Reannotated.pts68.npy'))
-roi_boxs = _load(osp.join(d, 'AFLW2000-3D_crop.roi_box.npy'))
+yaw_list = _load(osp.join(d, 'AFLW_GT_crop_yaws.npy'))
+roi_boxs = _load(osp.join(d, 'AFLW_GT_crop_roi_box.npy'))
+pts68_all = _load(osp.join(d, 'AFLW_GT_pts68.npy'))
+pts21_all = _load(osp.join(d, 'AFLW_GT_pts21.npy'))
 
 
 def ana(nme_list, null_index):
-
-    yaw_list_abs = np.abs(yaws_list)
+    yaw_list_abs = np.abs(yaw_list)
 
     if len(null_index) > 0:
         nme_list = np.delete(nme_list, null_index, axis=0)
         yaw_list_abs = np.delete(yaw_list_abs, null_index, axis=0)
 
-    # yaw_list_abs = np.abs(yaws_list)
     ind_yaw_1 = yaw_list_abs <= 30
     ind_yaw_2 = np.bitwise_and(yaw_list_abs > 30, yaw_list_abs <= 60)
     ind_yaw_3 = yaw_list_abs > 60
@@ -73,44 +54,44 @@ def ana(nme_list, null_index):
     return mean_nme_1, mean_nme_2, mean_nme_3, mean, std
 
 
-def convert_to_ori(lms, i):
+def calc_nme(pts68_fit_all):
     std_size = 120
-    sx, sy, ex, ey = roi_boxs[i]
-    scale_x = (ex - sx) / std_size
-    scale_y = (ey - sy) / std_size
-    lms[0, :] = lms[0, :] * scale_x + sx
-    lms[1, :] = lms[1, :] * scale_y + sy
-    return lms
-
-
-def calc_nme(pts68_fit_all, option='ori'):
-    if option == 'ori':
-        pts68_all = pts68_all_ori
-    elif option == 're':
-        pts68_all = pts68_all_re
-    std_size = 120  # 120
+    ind_68to21 = [[18], [20], [22], [23], [25], [27], [37], [37, 38, 39, 40, 41, 42], [40], [43],
+                  [43, 44, 45, 46, 47, 48],
+                  [46], [3], [32], [31], [36], [15], [49], [61, 62, 63, 64, 65, 66, 67, 68], [55], [9]]
+    for i in range(len(ind_68to21)):
+        for j in range(len(ind_68to21[i])):
+            ind_68to21[i][j] -= 1
 
     nme_list = []
-
-    # roi_boxs_new = np.delete(roi_boxs)
 
     for i in range(len(roi_boxs)):
         pts68_fit = pts68_fit_all[i]
         pts68_gt = pts68_all[i]
+        pts21_gt = pts21_all[i]
 
+        # reconstruct 68 pts
         sx, sy, ex, ey = roi_boxs[i]
         scale_x = (ex - sx) / std_size
         scale_y = (ey - sy) / std_size
         pts68_fit[0, :] = pts68_fit[0, :] * scale_x + sx
         pts68_fit[1, :] = pts68_fit[1, :] * scale_y + sy
 
+        # pts68 -> pts21
+        pts21_est = np.zeros_like(pts21_gt, dtype=np.float32)
+        for i in range(21):
+            ind = ind_68to21[i]
+            tmp = np.mean(pts68_fit[:, ind], 1)
+            pts21_est[:, i] = tmp
+
         # build bbox
         minx, maxx = np.min(pts68_gt[0, :]), np.max(pts68_gt[0, :])
         miny, maxy = np.min(pts68_gt[1, :]), np.max(pts68_gt[1, :])
         llength = sqrt((maxx - minx) * (maxy - miny))
 
-        #
-        dis = pts68_fit - pts68_gt[:2, :]
+        # nme
+        pt_valid = (pts21_gt[0, :] != -1) & (pts21_gt[1, :] != -1)
+        dis = pts21_est[:, pt_valid] - pts21_gt[:, pt_valid]
         dis = np.sqrt(np.sum(np.power(dis, 2), 0))
         dis = np.mean(dis)
         nme = dis / llength
