@@ -3,7 +3,7 @@ batch_size: 64
 input_size: 256
 num_workers: 0
 ch_size: 3
-sub_name: 'prnet1'
+sub_name: 'prnet'
 pretrain_name: 
 
 # dataset setting

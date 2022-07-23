@@ -18,8 +18,8 @@ def getCentroids(verts):
 
 
 def main():
-    # vertices = np.load('../data/save-img/blender/vertices_68.npy')
-    vertices = np.loadtxt('../data/save-img/blender/vertices_dense_test_final.txt')
+    # vertices = np.load('../data/save-img/blender/vertices_sel_boundary.npy') #vertices_68.npy
+    vertices = np.loadtxt('../data/save-img/blender/vertices_sel_test1.txt')
     template = m3io.import_mesh('../data/save-img/blender/base_template.obj')
 
     vertices = vertices[0:].astype(int)
@@ -36,7 +36,7 @@ def main():
     #
     vertices_68_2d_new = vertices_68_2d.copy()
 
-    for i in range(0, 1):
+    for i in range(0, 4):
         tris, vertices_68_2d_new = getCentroids(vertices_68_2d_new)
     #
     # ctree = cKDTree(vertices_all_2d)
@@ -48,10 +48,11 @@ def main():
     #     indexs.append(inds)
     # print('***************************************')
     print(len(vertices))
+    print(len(vertices_68_2d_new))
     # # ds, inds = ctree.query(vertices_68_2d_new[0], 1)
     # # np.savetxt('../data/save-img/blender/vertices_68.txt',np.asarray(indexs))
     plt.triplot(vertices_68_2d_new[:, 0], vertices_68_2d_new[:, 1], tris.simplices)
-    plt.plot(vertices_68_2d[:, 0], vertices_68_2d[:, 1], 'ro')
+    plt.plot(vertices_68_2d_new[:, 0], vertices_68_2d_new[:, 1], 'ro')
 
     plt.show()
 
