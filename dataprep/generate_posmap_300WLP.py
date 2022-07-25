@@ -12,7 +12,7 @@ import skimage.transform
 from time import time
 import matplotlib.pyplot as plt
 
-sys.path.append('..')
+sys.path.append('../..')
 from face3d import face3d
 from face3d.face3d import mesh
 from face3d.face3d.morphable_model import MorphabelModel
